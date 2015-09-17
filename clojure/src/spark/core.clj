@@ -14,16 +14,55 @@
 
 (defn make-spark-context []
   (let [c (-> (conf/spark-conf)
-              ;;(conf/master "local")
+              (conf/master "local")
               (conf/app-name "Clojure Spark example"))]
     (spark/spark-context c)))
 
 
 
+(defonce sc (make-spark-context))
+
+
+(comment
+
+  (spark/take 4 area-rdd)
+  (spark/take 113 min-price)
+  (spark/take 113 max-price)
+  (spark/take 4 area-rdd)
+  (nth (spark/take 15 words-rdd) 13)
+  (spark/get )
+
+  (max (Integer/parseInt (nth x 1)) (Integer/parseInt (nth y 1)))
+
+(def input-rdd (spark/text-file sc "../input/pp-monthly-update-new-version.csv"))
+(def area-rdd (spark/map-to-pair index-on-area input-rdd))
+(def max-price (spark/reduce-by-key (fn [x y] (max x y) ) area-rdd))
+(def min-price (spark/reduce-by-key (fn [x y] (min x y) ) area-rdd))
+
+)
+
+(defn index-sell-price-by-area [l]
+  (let [sx (s/split l #"\",\"")]
+    (spark/tuple (nth sx 13) (Integer/parseInt (nth sx 1)))))
+
+
+(defn get-sell-price-by-area [input-rdd] (spark/map-to-pair index-sell-price-by-area input-rdd))
+(def max-price (fn [x y] (max x y) ))
+(def min-price (fn [x y] (min x y) ))
+
+
+
+
+
+
 (defn -main [& args]
-  (let [sc (make-spark-context)
-        input-rdd (spark/text-file sc "hdfs://localhost/user/clojspark/basics/inputdata")
-	  words-rdd (spark/flat-map (fn [l] (s/split l #" ")) input-rdd)
-	  count-rdd (->> (spark/map-to-pair (fn [w] (spark/tuple w 1)) words-rdd) (spark/reduce-by-key +) )
-	  res (spark/map (s-de/key-value-fn (fn [k v] (str "(" k ", " v ")"))) count-rdd) ]
-    (println (spark/collect res))))
+  (let [input-rdd (spark/text-file sc "../input/pp-monthly-update-new-version.csv")
+        area-rdd (spark/map-to-pair index-sell-price-by-area input-rdd)
+        max-price-rdd (spark/reduce-by-key max-price area-rdd)
+        min-price-rdd (spark/reduce-by-key min-price area-rdd)
+        max-price (spark/take 10 max-price-rdd)
+        min-price (spark/take 10 min-price-rdd)
+        ]
+        (println "max price:" max-price)
+        (println "min price:" min-price)
+        ))

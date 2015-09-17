@@ -1,19 +1,10 @@
 # clojspark
 
-This repo is to demonstrate how to run a simple word Count example using Spark (in Yarn client mode) with a Scala and a Clojure example which are strictly equivalent. The user is invited to compare both implementation and extend this repo with more Spark example. The repo was created to be available to bootstrap a Clojure dojo taking place in Canary Wharf London on the 15th Sept 2015.
+The repo was created at the Clojure dojo taking place in Canary Wharf London on the 15th Sept 2015. It demonstrate the use of Clojure and Spark to calculate a min and max price of house sell in the uk given a CSV file with historical data.
 
-## Pre-requisite
-
-* the [Docker Cloudera image](https://github.com/smdahmed/hadoop-cdh-pseudo-docker) is built and started as Docker container
 
 ## Quick Start
 
-* ssh into your the [Docker Cloudera image](https://github.com/smdahmed/hadoop-cdh-pseudo-docker) that you have started
-* `cd /dummy/dev`
-* Clone this repo (`git clone git@github.com:smdahmed/clojspark.git`) inside the [Docker Cloudera image](https://github.com/smdahmed/hadoop-cdh-pseudo-docker)
-* `cd clojspark`
-* run:
-
-```
-./utils/setup.sh
-```
+* clone this repo
+* `cd [clone]/clojure`
+* `lein run`
